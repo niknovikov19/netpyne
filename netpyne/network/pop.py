@@ -341,6 +341,16 @@ class Pop(object):
             cellTags['x'] = sizeX * randLocs[i, 0]  # calculate x location (um)
             cellTags['y'] = sizeY * randLocs[i, 1]  # calculate y location (um)
             cellTags['z'] = sizeZ * randLocs[i, 2]  # calculate z location (um)
+            if 'params' not in cellTags:
+                cellTags['params'] = {}
+            if 'spkTimes' in self.tags:  # if VecStim, copy spike times to params
+                if isinstance(self.tags['spkTimes'][0], list):
+                    try:
+                        cellTags['params']['spkTimes'] = self.tags['spkTimes'][i]  # 2D list
+                    except:
+                        pass
+                else:
+                    cellTags['params']['spkTimes'] = self.tags['spkTimes']  # 1D list (same for all)
             cells.append(self.cellModelClass(gid, cellTags))  # instantiate Cell object
             if sim.cfg.verbose:
                 print(

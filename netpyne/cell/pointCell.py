@@ -251,6 +251,7 @@ class PointCell(Cell):
             # missing params
             else:
                 print('\nError: VecStim requires interval, rate or spkTimes')
+                print(self.tags)
                 return
 
             # pulse list: start, end, rate, noise
