@@ -84,7 +84,7 @@ class NetpyneRunner(Runner):
                 except Exception as e:
                     raise Exception("failed on mapping: cfg.{} with value: {}\n{}".format(assign_path, value, e))
 
-        def get_SimConfig(self):
+        def get_SimConfig(self, *args, **kwargs):
             """
             Creates / Returns a SimConfig instance
             Parameters
@@ -95,14 +95,14 @@ class NetpyneRunner(Runner):
             -------
             SimConfig instance
             """
-            if self.cfg:
+            if self.cfg and (not args) and ('simConfigDict' not in kwargs):
                 return self.cfg
             else:
                 from netpyne import specs
                 self.cfg = type("Runner_SimConfig", (specs.SimConfig,),
                     {'__mappings__': self.mappings,
                      'update_cfg': update_cfg,
-                     'update': update_cfg})()
+                     'update': update_cfg})(*args, **kwargs)
                 return self.cfg
 
         def set_SimConfig(self):

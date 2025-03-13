@@ -18,7 +18,7 @@ if nogui:  # completely disables graphics (avoids importing matplotlib)
 elif not display or len(display) == 0:  # if no display env available (e.g. clusters) uses 'Agg' backend to plot
     import matplotlib
 
-    matplotlib.use('Agg')
+    #matplotlib.use('Agg')
 
 from netpyne import analysis
 from netpyne import batch

@@ -151,12 +151,15 @@ def subcellularConn(self, allCellTags, allPopTags):
     """
 
     from .. import sim
+    from ..cell import CompartCell
 
     sim.timing('start', 'subConnectTime')
     print('  Distributing synapses based on subcellular connectivity rules...')
 
     for subConnParamTemp in list(self.params.subConnParams.values()):  # for each conn rule or parameter set
         subConnParam = subConnParamTemp.copy()
+        
+        print(subConnParam)
 
         # find list of pre and post cell
         preCellsTags, postCellsTags = self._findPrePostCellsCondition(
@@ -183,7 +186,9 @@ def subcellularConn(self, allCellTags, allPopTags):
                             if not conn['synMech'].startswith('__grouped__'):
                                 conns.append(conn)
                                 # iConn = iConn + 1
-                                connGroupLabel = '%d_%s_%.4f' % (conn['preGid'], conn['sec'], conn['loc'])
+                                print(conn)
+                                #connGroupLabel = '%d_%s_%.4f' % (conn['preGid'], conn['sec'], conn['loc'])
+                                connGroupLabel = f'{conn["preGid"]}_{conn["sec"]}_{conn["loc"]:.4f}'
                                 if conn['synMech'] in subConnParam['groupSynMechs']:
                                     for synMech in [s for s in subConnParam['groupSynMechs'] if s != conn['synMech']]:
                                         connGroup = next(
@@ -203,6 +208,9 @@ def subcellularConn(self, allCellTags, allPopTags):
                                             print('  Warning: Grouped synMechs %s not found' % (str(connGroup)))
                     else:
                         conns = allConns
+                        
+                    if not isinstance(postCell, CompartCell):
+                        continue
 
                     # sort conns so reproducible across different number of cores
                     # use sec+preGid to avoid artificial distribution based on preGid (e.g. low gids = close to soma)
@@ -342,7 +350,8 @@ def subcellularConn(self, allCellTags, allPopTags):
                     for i, (conn, newSec, newLoc) in enumerate(zip(conns, newSecs, newLocs)):
 
                         # get conn group label before updating params
-                        connGroupLabel = '%d_%s_%.4f' % (conn['preGid'], conn['sec'], conn['loc'])
+                        #connGroupLabel = '%d_%s_%.4f' % (conn['preGid'], conn['sec'], conn['loc'])
+                        connGroupLabel = f'{conn["preGid"]}_{conn["sec"]}_{conn["loc"]:.4f}'
 
                         # update weight if weightNorm present
                         newWeightNorm = None
