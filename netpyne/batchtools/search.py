@@ -143,7 +143,11 @@ def ray_search(dispatcher_constructor: Callable, # constructor for the dispatche
                mode: Optional[str] = "min",  # either 'min' or 'max' (whether to minimize or maximize the metric
                algorithm_config: Optional[dict] = None, # additional configuration for the search algorithm
                ) -> tune.ResultGrid:
-    ray.init(runtime_env={"working_dir": "."}) # TODO needed for python import statements ?
+    
+    ray.init(
+        runtime_env={"working_dir": "."},
+        object_store_memory=(1 * 1024**3)
+    ) # TODO needed for python import statements ?
 
     if algorithm_config == None:
         algorithm_config = {}
