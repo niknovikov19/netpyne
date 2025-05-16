@@ -28,7 +28,10 @@ class NetpyneRunner(Runner):
             kwargs - Unused
             """
             _super.__init__(self, **kwargs)
-            self.netParams = netParams
+            if isinstance(netParams, dict):
+                self.netParams = specs.NetParams(netParams)
+            else:
+                self.netParams = netParams
             self.cfg = cfg
 
         def _set_inheritance(self, inherit):
