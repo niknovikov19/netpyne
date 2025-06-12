@@ -1165,7 +1165,9 @@ If this cell is expected to be a point cell instead, make sure the correspondent
                         k: v for k, v in params.items() if k not in ['conds', 'preConds', 'postConds']
                     }.items():
                         try:
-                            if paramName == 'weight':
+                            if paramName == 'active':
+                                conn['hObj'].active(paramValue)
+                            elif paramName == 'weight':
                                 conn['hObj'].weight[0] = paramValue
                             else:
                                 setattr(conn['hObj'], paramName, paramValue)
