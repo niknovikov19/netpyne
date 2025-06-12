@@ -147,7 +147,7 @@ def ray_search(dispatcher_constructor: Callable, # constructor for the dispatche
     ray.init(
         runtime_env={
             "working_dir": ".",
-            "excludes": ["**.pkl"]
+            "excludes": ["**.pkl", "exp_results/*"]
         },
         object_store_memory=(1 * 1024**3)
     ) # TODO needed for python import statements ?
