@@ -50,7 +50,7 @@ class NetpyneRunner(Runner):
                 raise KeyError("inheritance {} not found in runtk.RUNNERS (please check runtk.RUNNERS for valid strings...".format(inherit))
 
 
-        def get_NetParams(self):
+        def get_NetParams(self, netParams=None):
             """
             Creates / Returns a NetParams instance
             Parameters
@@ -62,12 +62,18 @@ class NetpyneRunner(Runner):
             NetParams instance
 
             """
-            if self.netParams:
-                return self.netParams
+            from netpyne import specs
+
+            if netParams is None:
+                if not self.netParams:                    
+                    self.netParams = specs.NetParams()
             else:
-                from netpyne import specs
-                self.netParams = specs.NetParams()
-                return self.netParams
+                if isinstance(netParams, dict):
+                    self.netParams = specs.NetParams(netParams)
+                else:
+                    self.netParams = netParams
+                                    
+            return self.netParams
 
         def update_cfg(self): #intended to take `cfg` instance as self
             """
