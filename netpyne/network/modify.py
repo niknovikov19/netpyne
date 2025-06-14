@@ -120,7 +120,7 @@ def modifyConns(self, params, updateMasterAllCells=False):
     # Instantiate network connections based on the connectivity rules defined in params
     sim.timing('start', 'modifyConnsTime')
     if sim.rank == 0:
-        print('Modfying connection parameters...')
+        print(f'Modfying connection parameters: {str(params)}...')
 
     for cell in self.cells:
         cell.modifyConns(params)

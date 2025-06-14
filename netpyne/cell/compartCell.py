@@ -3,6 +3,8 @@ Module containing a compartmental cell class
 
 """
 
+from warnings import warn
+
 from netpyne.specs.netParams import CellParams, SynMechParams
 
 try:
@@ -1131,6 +1133,14 @@ If this cell is expected to be a point cell instead, make sure the correspondent
 
     def modifyConns(self, params):
         from .. import sim
+        from ..sim.utils import checkConditions
+
+        def _gid_to_pop_name(gid):
+            for pop_name in sim.net.pops:
+                gid_min, gid_max = sim._pop_gid_range[pop_name]
+                if gid_min <= gid <= gid_max:
+                    return pop_name
+            return None
 
         for conn in self.conns:
             conditionsMet = 1
@@ -1143,17 +1153,34 @@ If this cell is expected to be a point cell instead, make sure the correspondent
                 if 'postGid' in conds:
                     conds['gid'] = conds.pop('postGid')
                 conditionsMet = sim.utils.checkConditions(conds, against=conn, cellGid=self.gid)
-
+            
             if conditionsMet and 'postConds' in params:
                 conditionsMet = self.checkConditions(params['postConds'])
 
+            #warn(f'CONN: {str(conn)}')
+            #warn(f'MODIFY: {str(params)}')
+
             if conditionsMet and 'preConds' in params:
                 try:
-                    cell = sim.net.cells[conn['preGid']]
+                    if list(params['preConds'].keys()) != ['pop']:
+                        raise ValueError('preConds should contain a single entry: "pop"')
+                    pop_pre = _gid_to_pop_name(conn['preGid'])
+                    conditionsMet = checkConditions(params['preConds'], {'pop': pop_pre})
+                    #warn(f'CONN: {conn["label"]}, '
+                    #     f'PRE: {pop_pre} | {params["preConds"]["pop"]}, '
+                    #     f'OK: {conditionsMet}')
+
+                    """ cell = sim.net.cells[conn['preGid']]
+                    #warn(f'PRE POP: {cell.tags["pop"]}')
+                    #warn(f'PRE TAGS: {str(cell.tags)}')
                     if cell:
+                        #print(f'PRE TAGS: {str(cell.tags)}', flush=True)
                         conditionsMet = cell.checkConditions(params['preConds'])
-                except:
-                    pass
+                    #else:
+                        #print('PRE CELL IS NONE', flush=True) """
+                except Exception as e:
+                    warn(f'PRECONDS EXCEPTION: {e}', flush=True)
+                    #pass
                     # print('Warning: modifyConns() does not yet support conditions of presynaptic cells when running parallel sims')
 
             if conditionsMet:  # if all conditions are met, set values for this cell
@@ -1167,8 +1194,10 @@ If this cell is expected to be a point cell instead, make sure the correspondent
                         k: v for k, v in params.items() if k not in ['conds', 'preConds', 'postConds']
                     }.items():
                         try:
-                            if paramName == 'active':
+                            if paramName == 'active_flag':
                                 conn['hObj'].active(paramValue)
+                                #if not paramValue:
+                                #    conn['hObj'].weight[0] = 0
                             elif paramName == 'weight':
                                 conn['hObj'].weight[0] = paramValue
                             else:
