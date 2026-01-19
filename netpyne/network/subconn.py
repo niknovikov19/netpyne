@@ -159,7 +159,7 @@ def subcellularConn(self, allCellTags, allPopTags):
     for subConnParamTemp in list(self.params.subConnParams.values()):  # for each conn rule or parameter set
         subConnParam = subConnParamTemp.copy()
         
-        print(subConnParam)
+        #print(subConnParam)
 
         # find list of pre and post cell
         preCellsTags, postCellsTags = self._findPrePostCellsCondition(
@@ -186,7 +186,7 @@ def subcellularConn(self, allCellTags, allPopTags):
                             if not conn['synMech'].startswith('__grouped__'):
                                 conns.append(conn)
                                 # iConn = iConn + 1
-                                print(conn)
+                                #print(conn)
                                 #connGroupLabel = '%d_%s_%.4f' % (conn['preGid'], conn['sec'], conn['loc'])
                                 connGroupLabel = f'{conn["preGid"]}_{conn["sec"]}_{conn["loc"]:.4f}'
                                 if conn['synMech'] in subConnParam['groupSynMechs']:

@@ -144,10 +144,20 @@ def ray_search(dispatcher_constructor: Callable, # constructor for the dispatche
                algorithm_config: Optional[dict] = None, # additional configuration for the search algorithm
                ) -> tune.ResultGrid:
     
+    print('>>>>>>> RAY INIT', flush=True)
     ray.init(
         runtime_env={
             "working_dir": ".",
-            "excludes": ["**.pkl", "exp_results/*"]
+            #"excludes": ["**.pkl", "exp_results/**", "**.out", "exp_logs_old"]
+            "excludes": [
+                '**/*.pkl',
+                '**/*.out',
+                '/.git/',
+                '**/__pycache__/',
+                '/exp_results/',
+                '/exp_logs_old/'
+                '/OLD/'
+            ]
         },
         object_store_memory=(1 * 1024**3)
     ) # TODO needed for python import statements ?
