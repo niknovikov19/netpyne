@@ -47,6 +47,7 @@ class PointCell(Cell):
         if 'params' in self.tags:
             dictParams = sim.replaceDictODict(self.tags.pop('params'))
             self.params = deepcopy(dictParams)
+            #print(f'>>>>>>> __init__() spike times:\n{self.params["spkTimes"]}', flush=True)
         else:
             self.params = {}
 
@@ -69,6 +70,8 @@ class PointCell(Cell):
         from .. import sim
         from ..specs import CellParams
 
+        #print(f'>>>>>>> createNEURONObj() spike times:\n{self.params["spkTimes"]}', flush=True)
+
         # add point processes
         try:
             self.hPointp = getattr(h, self.tags['cellModel'])()
@@ -88,6 +91,8 @@ class PointCell(Cell):
             self.hVectorIntervals = h.Vector(interval)
             self.hVectorTimes = h.Vector(self.params['rates'][1])
             self.hVectorIntervals.play(self.hPointp._ref_interval, self.hVectorTimes)  # set continuous = True?
+
+        #print(f'>>>>>>> createNEURONObj() spike times 1:\n{self.params["spkTimes"]}', flush=True)
 
         # set pointp params - for PointCells these are stored in self.params
         params = {k: v for k, v in self.params.items()}
@@ -109,6 +114,8 @@ class PointCell(Cell):
             except:
                 if sim.cfg.verbose:
                     print(f"    Error while setting '{paramName}' param to {self.hPointp}")
+        
+        #print(f'>>>>>>> createNEURONObj() spike times 2:\n{self.params["spkTimes"]}', flush=True)
 
         # add random num generator, and set number and seed for NetStims
         if self.tags['cellModel'] == 'NetStim':
@@ -133,6 +140,8 @@ class PointCell(Cell):
             # convert rate to interval
             if 'rate' in self.params:
                 self.params['interval'] = 1000.0 / self.params['rate']
+
+            #print(f'>>>>>>> createNEURONObj() spike times 3:\n{self.params["spkTimes"]}', flush=True)
 
             # if interval
             if 'interval' in self.params:
@@ -238,6 +247,7 @@ class PointCell(Cell):
                     return
                 spkTimes = np.array(spkTimes)
                 vec = h.Vector(len(spkTimes))
+                #print(f'>>>>>>> spkTimes in self.params:\n{spkTimes}', flush=True)
 
             # if spkTimess
             elif 'spkTimes' in self.tags:
@@ -247,6 +257,7 @@ class PointCell(Cell):
                     return
                 spkTimes = np.array(spkTimes)
                 vec = h.Vector(len(spkTimes))
+                #print(f'>>>>>>> spkTimes in self.tags:\n{spkTimes}', flush=True)
 
             # missing params
             else:

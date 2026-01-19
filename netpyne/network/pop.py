@@ -160,6 +160,8 @@ class Pop(object):
             cellTags['y'] = sim.net.params.sizeY * randLocs[i, 1]  # set y location (um)
             cellTags['z'] = sim.net.params.sizeZ * randLocs[i, 2]  # set z location (um)
             if 'spkTimes' in self.tags:  # if VecStim, copy spike times to params
+                #print('>>>>>>> createCellsFixedNum() spike times:')
+                #print(self.tags['spkTimes'], flush=True)
                 if isinstance(self.tags['spkTimes'][0], list):
                     try:
                         cellTags['params']['spkTimes'] = self.tags['spkTimes'][i]  # 2D list
