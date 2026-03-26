@@ -1582,7 +1582,15 @@ If this cell is expected to be a point cell instead, make sure the correspondent
                 rand = h.Random()
                 preGid = params['preGid'] if isinstance(params['preGid'], int) else 0
                 rand.Random123(sim.hashStr('connSynMechsSecs'), self.gid, preGid)  # initialize randomizer
-                pos = int(rand.discunif(0, len(synMechSecs) - 1))
+
+                # Check if length-weighted selection is enabled
+                connWeightSecByLength = getattr(sim.cfg, 'connWeightSecByLength', False)
+                
+                if connWeightSecByLength:
+                    pos = self._selectSecWeightedByLength(synMechSecs, rand)
+                else:
+                    pos = int(rand.discunif(0, len(synMechSecs) - 1))
+
                 synMechSecs[pos], synMechSecs[0] = synMechSecs[0], synMechSecs[pos]
                 if len(synMechLocs) > 1:
                     synMechLocs[pos], synMechLocs[0] = synMechLocs[0], synMechLocs[pos]
@@ -1756,3 +1764,23 @@ If this cell is expected to be a point cell instead, make sure the correspondent
 
     def originSec(self):
         return self.secs[self.originSecName()]
+
+    def _selectSecWeightedByLength(self, secLabels, rand):
+        # Get section lengths
+        secLengths = []
+        for secLabel in secLabels:
+            if secLabel in self.secs:
+                secLengths.append(self.secs[secLabel]['geom']['L'])
+            else:
+                raise ValueError(f'_selectSecWeightedByLength(): unknown section {secLabel}')
+        totalLength = sum(secLengths)
+
+        # Generate random value and find the corresponding section
+        rand.uniform(0, totalLength)
+        r = rand.repick()
+        s = 0.0
+        for i, L in enumerate(secLengths):
+            s += L
+            if r <= s:
+                return i
+        return len(secLabels) - 1

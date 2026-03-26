@@ -52,6 +52,7 @@ class SimConfig(object):
             False  # replace dict format with compact list format for conns (need to provide list of keys to include)
         )
         self.connRandomSecFromList = True  # select random section (and location) from list even when synsPerConn=1
+        self.connWeightSecByLength = False  # NN: weight section selection
         self.distributeSynsUniformly = True  # locate synapses at uniformly across section list; if false, place one syn per section in section list
         self.pt3dRelativeToCellLocation = True  # Make cell 3d points relative to the cell x,y,z location
         self.invertedYCoord = (
